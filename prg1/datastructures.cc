@@ -160,7 +160,19 @@ bool Datastructures::change_town_name(TownID id, const Name &newname)
 std::vector<TownID> Datastructures::towns_alphabetically()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("towns_alphabetically()");
+    //throw NotImplemented("towns_alphabetically()");
+
+    std::multimap<Name, TownID> temp;
+    std::vector<TownID> towns;
+
+    for(auto const& pair : TownContainer_){
+        temp.insert({pair.second.name, pair.first});
+    }
+    for(auto const& pair : temp){
+        towns.push_back(pair.second);
+    }
+    return towns;
+
 }
 
 std::vector<TownID> Datastructures::towns_distance_increasing()
