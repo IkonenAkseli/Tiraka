@@ -178,7 +178,23 @@ std::vector<TownID> Datastructures::towns_alphabetically()
 std::vector<TownID> Datastructures::towns_distance_increasing()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("towns_distance_increasing()");
+    //throw NotImplemented("towns_distance_increasing()");
+    std::multimap<int, TownID> temp;
+    std::vector<TownID> towns;
+    Coord origo = {0,0};
+    Coord location;
+    int dist;
+
+    for(auto const& pair : TownContainer_){
+        location = pair.second.coord;
+        dist = get_distance(location, origo);
+        temp.insert({dist, pair.first});
+    }
+    for(auto const& pair : temp){
+        towns.push_back(pair.second);
+    }
+    return towns;
+
 }
 
 TownID Datastructures::min_distance()
@@ -248,4 +264,13 @@ bool Datastructures::check_Id(TownID id)
         return false;
     }
     return true;
+}
+
+int Datastructures::get_distance(Coord coord1, Coord coord2)
+{
+
+    float temp = sqrt(pow(coord1.x-coord2.x,2)+pow(coord1.y-coord2.y,2)*1.0);
+    int dist = temp;
+
+    return dist;
 }

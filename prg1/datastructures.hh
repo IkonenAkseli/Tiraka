@@ -198,6 +198,11 @@ private:
     // Returns true if a town with the given id exists, false if not
     bool check_Id(TownID id);
 
+    // Calculates the eucledian distance between 2 coordinates
+    // Parameters: Coordinates 1 and 2
+    // Returns: Distance between the 2 coordinates rounded down
+    int get_distance(Coord coord1, Coord coord2);
+
 };
 
 #endif // DATASTRUCTURES_HH
