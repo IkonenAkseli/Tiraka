@@ -181,7 +181,7 @@ std::vector<TownID> Datastructures::towns_distance_increasing()
 {
     // Replace the line below with your implementation
     //throw NotImplemented("towns_distance_increasing()");
-    std::multimap<int, TownID> temp;
+    /*std::multimap<int, TownID> temp;
     std::vector<TownID> towns;
     Coord origo = {0,0};
     Coord location;
@@ -195,7 +195,9 @@ std::vector<TownID> Datastructures::towns_distance_increasing()
     for(auto const& pair : temp){
         towns.push_back(pair.second);
     }
-    return towns;
+    return towns;*/
+
+    return get_distance_vector({0,0});
 
 }
 
@@ -357,4 +359,23 @@ void Datastructures::add_master(std::vector<TownID> &masters, TownID id)
         masters.push_back(TownContainer_.at(id).master);
         add_master(masters, TownContainer_.at(id).master);
     }
+}
+
+std::vector<TownID> Datastructures::get_distance_vector(Coord coord1)
+{
+    std::multimap<int, TownID> temp;
+    std::vector<TownID> towns;
+
+    Coord location;
+    int dist;
+
+    for(auto const& pair : TownContainer_){
+        location = pair.second.coord;
+        dist = get_distance(location, coord1);
+        temp.insert({dist, pair.first});
+    }
+    for(auto const& pair : temp){
+        towns.push_back(pair.second);
+    }
+    return towns;
 }

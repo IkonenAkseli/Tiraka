@@ -205,6 +205,7 @@ private:
     int get_distance(Coord coord1, Coord coord2);
 
     void add_master(std::vector<TownID> &masters, TownID id);
+    std::vector<TownID> get_distance_vector(Coord coord1);
 
 };
 
