@@ -50,32 +50,56 @@ void Datastructures::clear_all()
     throw NotImplemented("clear_all()");
 }
 
-bool Datastructures::add_town(TownID /*id*/, const Name &/*name*/, Coord /*coord*/, int /*tax*/)
+bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("add_town()");
+    //throw NotImplemented("add_town()");
+    if(TownContainer_.find(id)!=TownContainer_.end()){
+        return false;
+    }
+
+    TownContainer_.insert({id, {id, name, coord, tax, "none", "none"}});
+
+
+    return true;
 }
 
-Name Datastructures::get_town_name(TownID /*id*/)
+Name Datastructures::get_town_name(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("get_town_name()");
+    //throw NotImplemented("get_town_name()");
+
+    if(TownContainer_.find(id)==TownContainer_.end()){
+        return NO_NAME;
+    }
+    return TownContainer_.at(id).name;
 }
 
-Coord Datastructures::get_town_coordinates(TownID /*id*/)
+Coord Datastructures::get_town_coordinates(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("get_town_coordinates()");
+    //throw NotImplemented("get_town_coordinates()");
+
+    if(TownContainer_.find(id)==TownContainer_.end()){
+        return NO_COORD;
+    }
+    return TownContainer_.at(id).coord;
+
 }
 
-int Datastructures::get_town_tax(TownID /*id*/)
+int Datastructures::get_town_tax(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("get_town_tax()");
+    //throw NotImplemented("get_town_tax()");
+    if(TownContainer_.find(id)==TownContainer_.end()){
+        return NO_VALUE;
+    }
+    return TownContainer_.at(id).tax;
+
 }
 
 std::vector<TownID> Datastructures::all_towns()

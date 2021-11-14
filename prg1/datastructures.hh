@@ -85,7 +85,16 @@ public:
 private:
     std::string msg_;
 };
+struct TownData
+{
+    TownID id;
+    Name name;
+    Coord coord;
+    int tax;
+    TownID vassal;
+    TownID master;
 
+};
 
 // This is the class you are supposed to implement
 
@@ -179,6 +188,9 @@ public:
 
 private:
     // Add stuff needed for your class implementation here
+
+    //Container for all towns
+    std::unordered_map<TownID, TownData> TownContainer_;
 
 };
 
