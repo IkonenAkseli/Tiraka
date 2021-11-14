@@ -282,11 +282,35 @@ std::vector<TownID> Datastructures::taxer_path(TownID id)
     return towns;
 }
 
-bool Datastructures::remove_town(TownID /*id*/)
+bool Datastructures::remove_town(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("remove_town()");
+    //throw NotImplemented("remove_town()");
+    if(!check_Id(id)){
+        return false;
+    }
+
+    TownID master_id = TownContainer_.at(id).master;
+
+    std::vector<TownID> vassals = TownContainer_.at(id).vassals;
+
+    TownContainer_.at(master_id).vassals.erase(std::remove(TownContainer_.at(master_id).vassals.begin(),
+                                                           TownContainer_.at(master_id).vassals.end(), id));
+
+    for(auto& vassal : vassals){
+        TownContainer_.at(master_id).vassals.push_back(vassal);
+    }
+
+
+    for(auto &vassal_id : TownContainer_.at(id).vassals){
+        TownContainer_.at(vassal_id).master = master_id;
+    }
+
+    auto iter = TownContainer_.find(id);
+    TownContainer_.erase(iter);
+
+    return true;
 }
 
 std::vector<TownID> Datastructures::towns_nearest(Coord /*coord*/)
