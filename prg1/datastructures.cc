@@ -315,18 +315,26 @@ bool Datastructures::remove_town(TownID id)
     return true;
 }
 
-std::vector<TownID> Datastructures::towns_nearest(Coord /*coord*/)
+std::vector<TownID> Datastructures::towns_nearest(Coord coord)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("towns_nearest()");
+    //throw NotImplemented("towns_nearest()");
+    return get_distance_vector(coord);
 }
 
-std::vector<TownID> Datastructures::longest_vassal_path(TownID /*id*/)
+std::vector<TownID> Datastructures::longest_vassal_path(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("longest_vassal_path()");
+    //throw NotImplemented("longest_vassal_path()");
+    std::vector<TownID> towns;
+    if(!check_Id(id)){
+        towns.push_back(NO_TOWNID);
+        return towns;
+    }
+
+    return towns;
 }
 
 int Datastructures::total_net_tax(TownID /*id*/)
