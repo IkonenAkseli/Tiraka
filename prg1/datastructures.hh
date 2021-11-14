@@ -203,6 +203,8 @@ private:
     // Returns: Distance between the 2 coordinates rounded down
     int get_distance(Coord coord1, Coord coord2);
 
+    void add_master(std::vector<TownID> &masters, TownID id);
+
 };
 
 #endif // DATASTRUCTURES_HH

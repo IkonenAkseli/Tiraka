@@ -219,28 +219,67 @@ TownID Datastructures::min_distance()
 TownID Datastructures::max_distance()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("max_distance()");
+    //throw NotImplemented("max_distance()");
+    if(town_count() == 0){
+        return NO_TOWNID;
+    }
+    TownID town;
+
+    std::vector<TownID> temp = towns_distance_increasing();
+    town = (temp.back());
+
+
+    return town;
 }
 
-bool Datastructures::add_vassalship(TownID /*vassalid*/, TownID /*masterid*/)
+bool Datastructures::add_vassalship(TownID vassalid, TownID masterid)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("add_vassalship()");
+    //throw NotImplemented("add_vassalship()");
+
+    if(!check_Id(vassalid) or !check_Id(masterid)){
+        return false;
+    }
+    if(TownContainer_.at(vassalid).master != "NaN"){
+        return false;
+    }
+    TownContainer_.at(vassalid).master = masterid;
+    TownContainer_.at(masterid).vassals.push_back(vassalid);
+
+    return true;
 }
 
-std::vector<TownID> Datastructures::get_town_vassals(TownID /*id*/)
+std::vector<TownID> Datastructures::get_town_vassals(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("get_town_vassals()");
+    //throw NotImplemented("get_town_vassals()");
+    std::vector<TownID> towns;
+    if(!check_Id(id)){
+        towns.push_back(NO_TOWNID);
+        return towns;
+    }
+
+    towns = TownContainer_.at(id).vassals;
+
+    return towns;
 }
 
-std::vector<TownID> Datastructures::taxer_path(TownID /*id*/)
+std::vector<TownID> Datastructures::taxer_path(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("taxer_path()");
+    //throw NotImplemented("taxer_path()");
+    std::vector<TownID> towns;
+    if(!check_Id(id)){
+        towns.push_back(NO_TOWNID);
+        return towns;
+    }
+    add_master(towns, id);
+
+
+    return towns;
 }
 
 bool Datastructures::remove_town(TownID /*id*/)
@@ -286,4 +325,12 @@ int Datastructures::get_distance(Coord coord1, Coord coord2)
     int dist = temp;
 
     return dist;
+}
+
+void Datastructures::add_master(std::vector<TownID> &masters, TownID id)
+{
+    if(TownContainer_.at(id).master != "NaN"){
+        masters.push_back(TownContainer_.at(id).master);
+        add_master(masters, TownContainer_.at(id).master);
+    }
 }
