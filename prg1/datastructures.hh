@@ -91,7 +91,7 @@ struct TownData
     Name name;
     Coord coord;
     int tax;
-    TownID vassal;
+    std::vector<TownID> vassals;
     TownID master;
 
 };

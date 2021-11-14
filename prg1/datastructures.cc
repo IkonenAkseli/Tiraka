@@ -59,7 +59,16 @@ bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
         return false;
     }
 
-    TownContainer_.insert({id, {id, name, coord, tax, "none", "none"}});
+    TownData temp;
+    temp.id = id;
+    temp.name = name;
+    temp.coord = coord;
+    temp.tax = tax;
+    temp.master = "NaN";
+    temp.vassals = {};
+
+    //TownContainer_.insert({id, {id, name, coord, tax, "none", std::vector<TownID>}});
+    TownContainer_.insert({id, temp});
 
 
     return true;
@@ -105,7 +114,15 @@ int Datastructures::get_town_tax(TownID id)
 std::vector<TownID> Datastructures::all_towns()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("all_towns()");
+    //throw NotImplemented("all_towns()");
+
+    std::vector<TownID> towns;
+
+    for(auto const &pair : TownContainer_){
+        towns.push_back(pair.first);
+    }
+
+    return towns;
 }
 
 std::vector<TownID> Datastructures::find_towns(const Name &/*name*/)
