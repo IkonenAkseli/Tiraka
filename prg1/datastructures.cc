@@ -41,13 +41,15 @@ Datastructures::~Datastructures()
 unsigned int Datastructures::town_count()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("town_count()");
+    //throw NotImplemented("town_count()");
+    return TownContainer_.size();
 }
 
 void Datastructures::clear_all()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("clear_all()");
+    //throw NotImplemented("clear_all()");
+    TownContainer_.clear();
 }
 
 bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
@@ -200,7 +202,18 @@ std::vector<TownID> Datastructures::towns_distance_increasing()
 TownID Datastructures::min_distance()
 {
     // Replace the line below with your implementation
-    throw NotImplemented("min_distance()");
+    //throw NotImplemented("min_distance()");
+
+    if(town_count() == 0){
+        return NO_TOWNID;
+    }
+    TownID town;
+
+    std::vector<TownID> temp = towns_distance_increasing();
+    town = temp.at(0);
+
+
+    return town;
 }
 
 TownID Datastructures::max_distance()
