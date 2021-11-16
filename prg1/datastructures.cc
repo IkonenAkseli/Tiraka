@@ -280,7 +280,7 @@ std::vector<TownID> Datastructures::taxer_path(TownID id)
         towns.push_back(NO_TOWNID);
         return towns;
     }
-    add_master(towns, id);
+    add_masters(towns, id);
 
 
     return towns;
@@ -315,13 +315,19 @@ bool Datastructures::remove_town(TownID id)
     TownContainer_.erase(iter);*/
     auto master = TownContainer_.at(id).master;
     std::vector<TownData*> vassals = TownContainer_.at(id).vassals;
-    auto vassal = &TownContainer_.at(id);
+    auto town = &TownContainer_.at(id);
 
     for(auto& vassal : vassals){
         master->vassals.push_back(vassal);
-        vassal->master = master;
+        if(master != nullptr){
+            vassal->master = master;
+        }
+
     }
-    master->vassals.erase((std::remove(master->vassals.begin(),master->vassals.end(),vassal)));
+    if(master != nullptr){
+        master->vassals.erase((std::remove(master->vassals.begin(),master->vassals.end(),town)));
+    }
+
     TownContainer_.erase(id);
 
     return true;
@@ -345,15 +351,32 @@ std::vector<TownID> Datastructures::longest_vassal_path(TownID id)
         towns.push_back(NO_TOWNID);
         return towns;
     }
+    auto town = &(TownContainer_.at(id));
+//    for(auto vassal : TownContainer_.at(id).vassals){
+
+//    }
+    towns = get_path_ids(town);
 
     return towns;
 }
 
-int Datastructures::total_net_tax(TownID /*id*/)
+int Datastructures::total_net_tax(TownID id)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("total_net_tax()");
+    //throw NotImplemented("total_net_tax()");
+    if(!check_Id(id)){
+        return NO_VALUE;
+    }
+    int tax;
+    auto town = &TownContainer_.at(id);
+    tax = get_tax(town);
+
+    if(town->master != nullptr){
+        tax *= 0.9;
+    }
+
+    return tax;
 }
 
 bool Datastructures::check_Id(TownID id)
@@ -373,13 +396,49 @@ int Datastructures::get_distance(Coord coord1, Coord coord2)
     return dist;
 }
 
-void Datastructures::add_master(std::vector<TownID> &masters, TownID id)
+void Datastructures::add_masters(std::vector<TownID> &masters, TownID id)
 {
     masters.push_back(id);
     if(TownContainer_.at(id).master != nullptr){
         //masters.push_back(TownContainer_.at(id).master->id);
-        add_master(masters, TownContainer_.at(id).master->id);
+        add_masters(masters, TownContainer_.at(id).master->id);
     }
+}
+
+std::vector<TownID> Datastructures::get_path_ids(TownData *child)
+{
+    std::vector<TownID> towns;
+
+    for(auto vassal : child->vassals){
+        std::vector<TownID> temp;
+        temp.push_back(child->id);
+        std::vector<TownID> call_temp;
+        call_temp = (get_path_ids(vassal));
+        for(auto &node : call_temp){
+            temp.push_back(node);
+        }
+        if(temp.size() > towns.size()){
+            towns = temp;
+        }
+    }
+
+    return towns;
+}
+
+int Datastructures::get_tax(TownData *town, bool first_call)
+{
+    int tax = town->tax;
+
+    for(auto vassal : town->vassals){
+        tax += get_tax(vassal, false);
+
+    }
+
+    if(first_call){
+        return tax;
+    }
+
+    return tax/10;
 }
 
 std::vector<TownID> Datastructures::get_distance_vector(Coord coord1)
