@@ -16,6 +16,7 @@
 #include <exception>
 #include <map>
 #include <algorithm>
+#include <iostream>
 
 // Types for IDs
 using TownID = std::string;

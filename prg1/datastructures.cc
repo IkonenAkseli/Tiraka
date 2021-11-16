@@ -346,18 +346,25 @@ std::vector<TownID> Datastructures::longest_vassal_path(TownID id)
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
     //throw NotImplemented("longest_vassal_path()");
+
     std::vector<TownID> towns;
+
+
     if(!check_Id(id)){
         towns.push_back(NO_TOWNID);
         return towns;
     }
     auto town = &(TownContainer_.at(id));
-//    for(auto vassal : TownContainer_.at(id).vassals){
 
-//    }
     towns = get_path_ids(town);
+    std::vector<TownID> towns_in_order;
 
-    return towns;
+    for(auto i = towns.rbegin(); i != towns.rend(); i++){
+        towns_in_order.push_back(*i);
+    }
+
+
+    return towns_in_order;
 }
 
 int Datastructures::total_net_tax(TownID id)
@@ -381,6 +388,7 @@ int Datastructures::total_net_tax(TownID id)
 
 bool Datastructures::check_Id(TownID id)
 {
+    std::cout << id << std::endl;
     if(TownContainer_.find(id)==TownContainer_.end()){
         return false;
     }
@@ -408,19 +416,30 @@ void Datastructures::add_masters(std::vector<TownID> &masters, TownID id)
 std::vector<TownID> Datastructures::get_path_ids(TownData *child)
 {
     std::vector<TownID> towns;
+    if(child->vassals.size() == 0){
+        towns.push_back(child->id);
+        return towns;
+    }
+
 
     for(auto vassal : child->vassals){
-        std::vector<TownID> temp;
-        temp.push_back(child->id);
-        std::vector<TownID> call_temp;
-        call_temp = (get_path_ids(vassal));
-        for(auto &node : call_temp){
-            temp.push_back(node);
-        }
-        if(temp.size() > towns.size()){
-            towns = temp;
+
+        std::vector<TownID> loop_temp;
+
+        loop_temp = get_path_ids(vassal);
+        loop_temp.push_back(child->id);
+
+        if(loop_temp.size() > towns.size()){
+            towns.clear();
+            for(auto &id : loop_temp){
+                towns.push_back(id);
+            }
         }
     }
+
+
+
+
 
     return towns;
 }
