@@ -93,8 +93,8 @@ struct TownData
     Name name;
     Coord coord;
     int tax;
-    std::vector<TownID> vassals;
-    TownID master;
+    std::vector<TownData*> vassals;
+    TownData* master;
 
 };
 
