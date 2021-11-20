@@ -96,7 +96,7 @@ struct TownData
     Name name;
     Coord coord;
     int tax;
-    std::vector<TownData*> vassals;
+    std::unordered_set<TownData*> vassals;
     TownData* master;
 
 };

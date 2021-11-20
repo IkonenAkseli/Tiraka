@@ -247,7 +247,7 @@ bool Datastructures::add_vassalship(TownID vassalid, TownID masterid)
         return false;
     }
     TownContainer_.at(vassalid).master = &(TownContainer_.at(masterid));
-    TownContainer_.at(masterid).vassals.push_back(&(TownContainer_.at(vassalid)));
+    TownContainer_.at(masterid).vassals.insert(&(TownContainer_.at(vassalid)));
 
     return true;
 }
@@ -314,18 +314,18 @@ bool Datastructures::remove_town(TownID id)
     auto iter = TownContainer_.find(id);
     TownContainer_.erase(iter);*/
     auto master = TownContainer_.at(id).master;
-    std::vector<TownData*> vassals = TownContainer_.at(id).vassals;
+    std::unordered_set<TownData*> vassals = TownContainer_.at(id).vassals;
     auto town = &TownContainer_.at(id);
 
     for(auto& vassal : vassals){
-        master->vassals.push_back(vassal);
+        master->vassals.insert(vassal);
         if(master != nullptr){
             vassal->master = master;
         }
 
     }
     if(master != nullptr){
-        master->vassals.erase((std::remove(master->vassals.begin(),master->vassals.end(),town)));
+        master->vassals.erase(town);
     }
 
     TownContainer_.erase(id);
