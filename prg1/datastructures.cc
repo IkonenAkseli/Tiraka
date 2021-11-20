@@ -1,8 +1,8 @@
 // Datastructures.cc
 //
-// Student name:
-// Student email:
-// Student number:
+// Student name: Akseli Ikonen
+// Student email: akseli.ikonen@tuni.fi
+// Student number: K434701
 
 #include "datastructures.hh"
 
@@ -444,20 +444,18 @@ std::vector<TownID> Datastructures::get_path_ids(TownData *child)
     return towns;
 }
 
-int Datastructures::get_tax(TownData *town, bool first_call)
+int Datastructures::get_tax(TownData *town)
 {
     int tax = town->tax;
 
     for(auto vassal : town->vassals){
-        tax += get_tax(vassal, false);
+        tax += get_tax(vassal)/10;
 
     }
 
-    if(first_call){
-        return tax;
-    }
 
-    return tax/10;
+
+    return tax;
 }
 
 std::vector<TownID> Datastructures::get_distance_vector(Coord coord1)

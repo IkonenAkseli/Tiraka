@@ -210,7 +210,7 @@ private:
     void add_masters(std::vector<TownID> &masters, TownID id);
 
     std::vector<TownID> get_path_ids(TownData* child);
-    int get_tax(TownData* town, bool first_call = true);
+    int get_tax(TownData* town);
     std::vector<TownID> get_distance_vector(Coord coord1);
 
 };
