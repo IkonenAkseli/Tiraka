@@ -178,26 +178,27 @@ public:
     // Short rationale for estimate: N amount of constant actions
     std::vector<TownID> get_town_vassals(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N)
+    // Short rationale for estimate: For calling add_masters
     std::vector<TownID> taxer_path(TownID id);
 
     // Non-compulsory phase 1 operations
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: Theta N
+    // Short rationale for estimate: N insertions to unordered_set where N
+    // equals amount of vassals the town had
     bool remove_town(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: NlogN
+    // Short rationale for estimate: For calling get_distance_vector
     std::vector<TownID> towns_nearest(Coord coord);
 
     // Estimate of performance:
     // Short rationale for estimate:
     std::vector<TownID> longest_vassal_path(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N)
+    // Short rationale for estimate: For calling get_tax
     int total_net_tax(TownID id);
 
 private:
@@ -205,6 +206,11 @@ private:
 
     //Container for all towns
     std::unordered_map<TownID, TownData> TownContainer_;
+
+    TownData* furthest_town_;
+
+    int depth_;
+    int running_depth_;
 
     // Helper for checking if a town with a certain id exists
     // Takes town id as a parameter
@@ -221,7 +227,8 @@ private:
     // Estimate for performance: O(N)
     // Rationale: Does push_back for each master above the node in it's branch
     // O(N) where N = Master count
-    void add_masters(std::vector<TownID> &masters, TownData* town);
+    void add_masters(std::vector<TownID> &masters, TownData* town,
+                     TownData* stop = nullptr);
 
     std::vector<TownID> get_path_ids(TownData* child);
 
@@ -238,6 +245,8 @@ private:
     // No loops inside loops, most complex operation done for each town
     // is logN
     std::vector<TownID> get_distance_vector(Coord coord1);
+
+    void set_furthest_vassal(TownData* town);
 
 };
 

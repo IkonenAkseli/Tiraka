@@ -300,29 +300,12 @@ bool Datastructures::remove_town(TownID id)
         return false;
     }
 
-    /*TownID master_id = TownContainer_.at(id).master;
 
-    std::vector<TownID> vassals = TownContainer_.at(id).vassals;
-
-    TownContainer_.at(master_id).vassals.erase(std::remove(TownContainer_.at(master_id).vassals.begin(),
-                                                           TownContainer_.at(master_id).vassals.end(), id));
-
-    for(auto& vassal : vassals){
-        TownContainer_.at(master_id).vassals.push_back(vassal);
-    }
-
-
-    for(auto &vassal_id : TownContainer_.at(id).vassals){
-        TownContainer_.at(vassal_id).master = master_id;
-    }
-
-    auto iter = TownContainer_.find(id);
-    TownContainer_.erase(iter);*/
     auto master = TownContainer_.at(id).master;
-    std::unordered_set<TownData*> vassals = TownContainer_.at(id).vassals;
+    std::unordered_set<TownData*>* vassals = &TownContainer_.at(id).vassals;
     auto town = &TownContainer_.at(id);
 
-    for(auto& vassal : vassals){
+    for(auto& vassal : *vassals){
         master->vassals.insert(vassal);
         if(master != nullptr){
             vassal->master = master;
@@ -351,22 +334,37 @@ std::vector<TownID> Datastructures::longest_vassal_path(TownID id)
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
     //throw NotImplemented("longest_vassal_path()");
-
     std::vector<TownID> towns;
-
-
-    if(!check_Id(id)){
-        towns.push_back(NO_TOWNID);
-        return towns;
-    }
+        if(!check_Id(id)){
+            towns.push_back(NO_TOWNID);
+            return towns;
+        }
+    depth_ = 0;
+    running_depth_ = 0;
     auto town = &(TownContainer_.at(id));
 
-    towns = get_path_ids(town);
+    if(town->vassals.empty()){
+        towns.push_back(id);
+        return towns;
+    }
+    set_furthest_vassal(town);
+    add_masters(towns, furthest_town_, town);
+
+
+
+
+
+
+
+
+//    towns = get_path_ids(town);
     std::vector<TownID> towns_in_order;
+    towns_in_order.push_back(id);
 
     for(auto i = towns.rbegin(); i != towns.rend(); i++){
         towns_in_order.push_back(*i);
     }
+
 
 
     return towns_in_order;
@@ -409,12 +407,13 @@ int Datastructures::get_distance(Coord coord1, Coord coord2)
     return dist;
 }
 
-void Datastructures::add_masters(std::vector<TownID> &masters, TownData* town)
+void Datastructures::add_masters(std::vector<TownID> &masters, TownData* town,
+                                 TownData* stop)
 {
     masters.push_back(town->id);
-    if(town->master != nullptr){
+    if(town->master != stop){
         //masters.push_back(TownContainer_.at(id).master->id);
-        add_masters(masters, town->master);
+        add_masters(masters, town->master, stop);
     }
 }
 
@@ -441,10 +440,6 @@ std::vector<TownID> Datastructures::get_path_ids(TownData *child)
             }
         }
     }
-
-
-
-
 
     return towns;
 }
@@ -478,4 +473,20 @@ std::vector<TownID> Datastructures::get_distance_vector(Coord coord1)
         towns.push_back(pair.second);
     }
     return towns;
+}
+
+void Datastructures::set_furthest_vassal(TownData *town)
+{
+    if(town->vassals.empty() && running_depth_ > depth_){
+        depth_ = running_depth_;
+        furthest_town_ = town;
+        running_depth_--;
+        return;
+    }
+
+    running_depth_++;
+    for(auto vassal : town->vassals){
+        set_furthest_vassal(vassal);
+    }
+
 }
