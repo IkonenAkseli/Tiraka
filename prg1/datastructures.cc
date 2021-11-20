@@ -61,16 +61,17 @@ bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
         return false;
     }
 
-    TownData temp;
-    temp.id = id;
-    temp.name = name;
-    temp.coord = coord;
-    temp.tax = tax;
-    temp.master = nullptr;
-    temp.vassals = {};
+//    TownData temp;
+//    temp.id = id;
+//    temp.name = name;
+//    temp.coord = coord;
+//    temp.tax = tax;
+//    temp.master = nullptr;
+//    temp.vassals = {};
 
-    //TownContainer_.insert({id, {id, name, coord, tax, "none", std::vector<TownID>}});
-    TownContainer_.insert({id, temp});
+    TownContainer_.insert({id, {id, name, coord, tax,
+                                std::unordered_set<TownData*>{}, nullptr}});
+    //TownContainer_.insert({id, temp});
 
 
     return true;
@@ -211,7 +212,7 @@ TownID Datastructures::min_distance()
     }
     TownID town;
 
-    std::vector<TownID> temp = towns_distance_increasing();
+    std::vector<TownID> temp = get_distance_vector({0,0});
     town = temp.at(0);
 
 
@@ -227,7 +228,7 @@ TownID Datastructures::max_distance()
     }
     TownID town;
 
-    std::vector<TownID> temp = towns_distance_increasing();
+    std::vector<TownID> temp = get_distance_vector({0,0});
     town = (temp.back());
 
 
@@ -262,10 +263,13 @@ std::vector<TownID> Datastructures::get_town_vassals(TownID id)
         towns.push_back(NO_TOWNID);
         return towns;
     }
+    auto vassals = &TownContainer_.at(id).vassals;
 
-    for(auto vassal : TownContainer_.at(id).vassals){
+
+    for(auto vassal : *vassals){
         towns.push_back(vassal->id);
     }
+
 
     return towns;
 }
@@ -453,8 +457,6 @@ int Datastructures::get_tax(TownData *town)
         tax += get_tax(vassal)/10;
 
     }
-
-
 
     return tax;
 }

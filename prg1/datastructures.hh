@@ -109,64 +109,73 @@ public:
     Datastructures();
     ~Datastructures();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(1)
+    // Short rationale for estimate: cpp claims size is constant
     unsigned int town_count();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N)
+    // Short rationale for estimate: cpp claims clear is linear
     void clear_all();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N) Theta 1
+    // Short rationale for estimate: Umap insertion can be O(N) but is
+    // constant on average
     bool add_town(TownID id, Name const& name, Coord coord, int tax);
 
     // Estimate of performance:
     // Short rationale for estimate:
     Name get_town_name(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N) Theta 1
+    // Short rationale for estimate: Operations are linear in worst case but
+    // constant on average
     Coord get_town_coordinates(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N) Theta 1
+    // Short rationale for estimate: Operations are linear in worst case but
+    // constant on average
     int get_town_tax(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N)
+    // Short rationale for estimate: Linear amount of constant operations
     std::vector<TownID> all_towns();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N)
+    // Short rationale for estimate: Linear amount of constant operations
     std::vector<TownID> find_towns(Name const& name);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N) Theta 1
+    // Short rationale for estimate: Operations are done once, they are linear
+    // in worst case and constant on average
     bool change_town_name(TownID id, Name const& newname);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: NlogN
+    // Short rationale for estimate: Inserting to and searching for key from
+    // multimap is logN and that operation is done N times where N = town count
     std::vector<TownID> towns_alphabetically();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: NlogN
+    // Short rationale for estimate: because this only calls another method
+    // which is NlogN
     std::vector<TownID> towns_distance_increasing();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: NlogN
+    // Short rationale for estimate: because this only calls another method
+    // which is NlogN and does constant actions
     TownID min_distance();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: NlogN
+    // Short rationale for estimate: because this only calls another method
+    // which is NlogN and does constant actions
     TownID max_distance();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N) Theta 1
+    // Short rationale for estimate: Searching key from umap worst case linear
+    // on average constant
     bool add_vassalship(TownID vassalid, TownID masterid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N) where N = amount of vassals for given town
+    // Short rationale for estimate: N amount of constant actions
     std::vector<TownID> get_town_vassals(TownID id);
 
     // Estimate of performance:
@@ -200,6 +209,8 @@ private:
     // Helper for checking if a town with a certain id exists
     // Takes town id as a parameter
     // Returns true if a town with the given id exists, false if not
+    // Estimate for performance: O(N) Theta 1
+    // Rationale: Umap.find is linear in worst case but constant in average
     bool check_Id(TownID id);
 
     // Calculates the eucledian distance between 2 coordinates
@@ -207,10 +218,25 @@ private:
     // Returns: Distance between the 2 coordinates rounded down
     int get_distance(Coord coord1, Coord coord2);
 
+    // Estimate for performance: O(N)
+    // Rationale: Does push_back for each master above the node in it's branch
+    // O(N) where N = Master count
     void add_masters(std::vector<TownID> &masters, TownData* town);
 
     std::vector<TownID> get_path_ids(TownData* child);
+
+    // Estimate for permormance: O(N)
+    // Rationale: Does O(1) operation for each vassal node, O(N) where
+    // N = vassals
     int get_tax(TownData* town);
+
+    // Returns a vector of TownID:s in an ascending order from a given Coord
+    // Takes a Coord as a parameter, does no checks for parameter validity
+    // Parameter must be valid.
+    // Estimate for performance: NlogN
+    // Rationale for estimate: Does nlogN operation for each town (N)
+    // No loops inside loops, most complex operation done for each town
+    // is logN
     std::vector<TownID> get_distance_vector(Coord coord1);
 
 };
