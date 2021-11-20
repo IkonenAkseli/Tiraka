@@ -193,8 +193,9 @@ public:
     // Short rationale for estimate: For calling get_distance_vector
     std::vector<TownID> towns_nearest(Coord coord);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N)
+    // Short rationale for estimate: Calls linear methods and does linear
+    // amount of constant operations.
     std::vector<TownID> longest_vassal_path(TownID id);
 
     // Estimate of performance: O(N)
@@ -222,16 +223,27 @@ private:
     // Calculates the eucledian distance between 2 coordinates
     // Parameters: Coordinates 1 and 2
     // Returns: Distance between the 2 coordinates rounded down
+    // Estimate of performance: O(1)
+    // Rationale: Does a constant calculation and returns the result.
     int get_distance(Coord coord1, Coord coord2);
 
+    // Takes a vector of town ID:s as a parameter, adds every master and masters
+    // master in to the given vector. Takes a pointer to a town from which to
+    // start as a parameter and a pointer at which to stop. By default stops
+    // when no masters remain.
+    // This method does no checks for parameters.
     // Estimate for performance: O(N)
     // Rationale: Does push_back for each master above the node in it's branch
     // O(N) where N = Master count
     void add_masters(std::vector<TownID> &masters, TownData* town,
                      TownData* stop = nullptr);
 
+    // This method is not used. Preserved only in case needed at some point.
     std::vector<TownID> get_path_ids(TownData* child);
 
+    // Gets tax for the given town, recursively calls itself to get tax from
+    // every vassal.
+    // Does no checks for the given parameter, returns int.
     // Estimate for permormance: O(N)
     // Rationale: Does O(1) operation for each vassal node, O(N) where
     // N = vassals
@@ -246,6 +258,13 @@ private:
     // is logN
     std::vector<TownID> get_distance_vector(Coord coord1);
 
+    // Finds the vassal furthest from a given town and sets it as
+    // furthest_town_
+    // Takes given town as a parameter, does no checks for validity of parameter
+    // Estimate for performance: O(N) where N = amount of vassals
+    // vassals vassals etc
+    // Rationale: Every vassal is visited and linear operations are done for
+    // each
     void set_furthest_vassal(TownData* town);
 
 };

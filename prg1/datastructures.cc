@@ -305,13 +305,18 @@ bool Datastructures::remove_town(TownID id)
     std::unordered_set<TownData*>* vassals = &TownContainer_.at(id).vassals;
     auto town = &TownContainer_.at(id);
 
+
+    // Set new master for each of the vassals, if the removed town had a master
+    // add the removed towns vassals as its vassals
     for(auto& vassal : *vassals){
-        master->vassals.insert(vassal);
+        vassal->master = master;
         if(master != nullptr){
-            vassal->master = master;
+
+            master->vassals.insert(vassal);
         }
 
     }
+    // Remove town from vassals set of master town if the town had one
     if(master != nullptr){
         master->vassals.erase(town);
     }
@@ -323,44 +328,42 @@ bool Datastructures::remove_town(TownID id)
 
 std::vector<TownID> Datastructures::towns_nearest(Coord coord)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("towns_nearest()");
+
     return get_distance_vector(coord);
 }
 
 std::vector<TownID> Datastructures::longest_vassal_path(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("longest_vassal_path()");
+
     std::vector<TownID> towns;
         if(!check_Id(id)){
             towns.push_back(NO_TOWNID);
             return towns;
         }
+
     depth_ = 0;
     running_depth_ = 0;
+
     auto town = &(TownContainer_.at(id));
 
+    // Return just the town if it has no vassals
     if(town->vassals.empty()){
         towns.push_back(id);
         return towns;
     }
+    // Get the vassal that has most steps to it and store it in furthest_town_
     set_furthest_vassal(town);
+    // Get masters from the furthest town to the town at which to stop
     add_masters(towns, furthest_town_, town);
 
 
-
-
-
-
-
-
-//    towns = get_path_ids(town);
     std::vector<TownID> towns_in_order;
+
+    // Town itself is not in yet so add it to the front of the vector in order
     towns_in_order.push_back(id);
 
+    // Reverse the order of the other vector and add it to the vector in order
+    // To get the correct vector
     for(auto i = towns.rbegin(); i != towns.rend(); i++){
         towns_in_order.push_back(*i);
     }
@@ -372,16 +375,19 @@ std::vector<TownID> Datastructures::longest_vassal_path(TownID id)
 
 int Datastructures::total_net_tax(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("total_net_tax()");
+
     if(!check_Id(id)){
         return NO_VALUE;
     }
+
     int tax;
+
     auto town = &TownContainer_.at(id);
+
+    // Get tax by calling a method
     tax = get_tax(town);
 
+    // Reduce amount of taxes going to the master if town has a master
     if(town->master != nullptr){
         tax = tax - (tax/10);
     }
@@ -411,12 +417,14 @@ void Datastructures::add_masters(std::vector<TownID> &masters, TownData* town,
                                  TownData* stop)
 {
     masters.push_back(town->id);
+
     if(town->master != stop){
-        //masters.push_back(TownContainer_.at(id).master->id);
+
         add_masters(masters, town->master, stop);
     }
 }
 
+// This method isn't used, but is preserved in case it ends up being needed
 std::vector<TownID> Datastructures::get_path_ids(TownData *child)
 {
     std::vector<TownID> towns;
@@ -464,11 +472,13 @@ std::vector<TownID> Datastructures::get_distance_vector(Coord coord1)
     Coord location;
     int dist;
 
+    // Get distance from coord and id pair and insert it to a multimap
     for(auto const& pair : TownContainer_){
         location = pair.second.coord;
         dist = get_distance(location, coord1);
         temp.insert({dist, pair.first});
     }
+    // Get ID:s from multimap and add them to a vector
     for(auto const& pair : temp){
         towns.push_back(pair.second);
     }
@@ -477,16 +487,24 @@ std::vector<TownID> Datastructures::get_distance_vector(Coord coord1)
 
 void Datastructures::set_furthest_vassal(TownData *town)
 {
+    // Increase depth when moving further down the "tree" of vassals
+    running_depth_++;
+
+    // Adds current town as furthest vassal away if current town has no vassals
+    // and is further away than a town already found.
     if(town->vassals.empty() && running_depth_ > depth_){
         depth_ = running_depth_;
         furthest_town_ = town;
+        // Reduce depth when moving back
         running_depth_--;
         return;
     }
 
-    running_depth_++;
+
     for(auto vassal : town->vassals){
         set_furthest_vassal(vassal);
     }
 
+    // Reduce depth when moving back
+    running_depth_--;
 }
