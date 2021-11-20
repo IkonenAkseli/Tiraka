@@ -1,8 +1,8 @@
 // Datastructures.hh
 //
-// Student name:
-// Student email:
-// Student number:
+// Student name: Akseli Ikonen
+// Student email: akseli.ikonen@tuni.fi
+// Student number: K434701
 
 #ifndef DATASTRUCTURES_HH
 #define DATASTRUCTURES_HH
@@ -16,7 +16,9 @@
 #include <exception>
 #include <map>
 #include <algorithm>
-#include <iostream>
+#include <set>
+
+#include <unordered_set>
 
 // Types for IDs
 using TownID = std::string;

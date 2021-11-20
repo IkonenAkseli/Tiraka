@@ -380,7 +380,7 @@ int Datastructures::total_net_tax(TownID id)
     tax = get_tax(town);
 
     if(town->master != nullptr){
-        tax *= 0.9;
+        tax = tax - (tax/10);
     }
 
     return tax;
@@ -388,7 +388,7 @@ int Datastructures::total_net_tax(TownID id)
 
 bool Datastructures::check_Id(TownID id)
 {
-    std::cout << id << std::endl;
+
     if(TownContainer_.find(id)==TownContainer_.end()){
         return false;
     }
