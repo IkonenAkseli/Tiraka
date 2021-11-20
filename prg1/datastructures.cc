@@ -40,48 +40,33 @@ Datastructures::~Datastructures()
 
 unsigned int Datastructures::town_count()
 {
-    // Replace the line below with your implementation
-    //throw NotImplemented("town_count()");
+
     return TownContainer_.size();
 }
 
 void Datastructures::clear_all()
 {
-    // Replace the line below with your implementation
-    //throw NotImplemented("clear_all()");
+
     TownContainer_.clear();
 }
 
 bool Datastructures::add_town(TownID id, const Name &name, Coord coord, int tax)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("add_town()");
+
     if(check_Id(id)){
         return false;
     }
 
-//    TownData temp;
-//    temp.id = id;
-//    temp.name = name;
-//    temp.coord = coord;
-//    temp.tax = tax;
-//    temp.master = nullptr;
-//    temp.vassals = {};
 
     TownContainer_.insert({id, {id, name, coord, tax,
                                 std::unordered_set<TownData*>{}, nullptr}});
-    //TownContainer_.insert({id, temp});
-
 
     return true;
 }
 
 Name Datastructures::get_town_name(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("get_town_name()");
+
 
     if(!check_Id(id)){
         return NO_NAME;
@@ -91,9 +76,7 @@ Name Datastructures::get_town_name(TownID id)
 
 Coord Datastructures::get_town_coordinates(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("get_town_coordinates()");
+
 
     if(!check_Id(id)){
         return NO_COORD;
@@ -104,9 +87,7 @@ Coord Datastructures::get_town_coordinates(TownID id)
 
 int Datastructures::get_town_tax(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("get_town_tax()");
+
     if(!check_Id(id)){
         return NO_VALUE;
     }
@@ -116,8 +97,7 @@ int Datastructures::get_town_tax(TownID id)
 
 std::vector<TownID> Datastructures::all_towns()
 {
-    // Replace the line below with your implementation
-    //throw NotImplemented("all_towns()");
+
 
     std::vector<TownID> towns;
 
@@ -130,9 +110,7 @@ std::vector<TownID> Datastructures::all_towns()
 
 std::vector<TownID> Datastructures::find_towns(const Name &name)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("find_towns()");
+
     std::vector<TownID> towns = {};
 
     for( auto const& pair : TownContainer_){
@@ -146,9 +124,7 @@ std::vector<TownID> Datastructures::find_towns(const Name &name)
 
 bool Datastructures::change_town_name(TownID id, const Name &newname)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("change_town_name()");
+
 
     if(!check_Id(id)){
         return false;
@@ -168,9 +144,11 @@ std::vector<TownID> Datastructures::towns_alphabetically()
     std::multimap<Name, TownID> temp;
     std::vector<TownID> towns;
 
+    // Add name Id pairs to multimap
     for(auto const& pair : TownContainer_){
         temp.insert({pair.second.name, pair.first});
     }
+    // Get id from multimap as it is in order by name
     for(auto const& pair : temp){
         towns.push_back(pair.second);
     }
@@ -180,23 +158,7 @@ std::vector<TownID> Datastructures::towns_alphabetically()
 
 std::vector<TownID> Datastructures::towns_distance_increasing()
 {
-    // Replace the line below with your implementation
-    //throw NotImplemented("towns_distance_increasing()");
-    /*std::multimap<int, TownID> temp;
-    std::vector<TownID> towns;
-    Coord origo = {0,0};
-    Coord location;
-    int dist;
 
-    for(auto const& pair : TownContainer_){
-        location = pair.second.coord;
-        dist = get_distance(location, origo);
-        temp.insert({dist, pair.first});
-    }
-    for(auto const& pair : temp){
-        towns.push_back(pair.second);
-    }
-    return towns;*/
 
     return get_distance_vector({0,0});
 
@@ -204,8 +166,7 @@ std::vector<TownID> Datastructures::towns_distance_increasing()
 
 TownID Datastructures::min_distance()
 {
-    // Replace the line below with your implementation
-    //throw NotImplemented("min_distance()");
+
 
     if(town_count() == 0){
         return NO_TOWNID;
@@ -213,6 +174,7 @@ TownID Datastructures::min_distance()
     TownID town;
 
     std::vector<TownID> temp = get_distance_vector({0,0});
+    // Get element from first position because vector is in ascending order
     town = temp.at(0);
 
 
@@ -229,6 +191,7 @@ TownID Datastructures::max_distance()
     TownID town;
 
     std::vector<TownID> temp = get_distance_vector({0,0});
+    // Get element from last position because vector is in ascending order
     town = (temp.back());
 
 
@@ -237,9 +200,7 @@ TownID Datastructures::max_distance()
 
 bool Datastructures::add_vassalship(TownID vassalid, TownID masterid)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("add_vassalship()");
+
 
     if(!check_Id(vassalid) or !check_Id(masterid)){
         return false;
@@ -247,7 +208,9 @@ bool Datastructures::add_vassalship(TownID vassalid, TownID masterid)
     if(TownContainer_.at(vassalid).master != nullptr){
         return false;
     }
+
     TownContainer_.at(vassalid).master = &(TownContainer_.at(masterid));
+
     TownContainer_.at(masterid).vassals.insert(&(TownContainer_.at(vassalid)));
 
     return true;
@@ -255,17 +218,17 @@ bool Datastructures::add_vassalship(TownID vassalid, TownID masterid)
 
 std::vector<TownID> Datastructures::get_town_vassals(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("get_town_vassals()");
+
     std::vector<TownID> towns;
+
     if(!check_Id(id)){
         towns.push_back(NO_TOWNID);
         return towns;
     }
+
     auto vassals = &TownContainer_.at(id).vassals;
 
-
+    // Add every vassal to the return vector
     for(auto vassal : *vassals){
         towns.push_back(vassal->id);
     }
@@ -276,9 +239,7 @@ std::vector<TownID> Datastructures::get_town_vassals(TownID id)
 
 std::vector<TownID> Datastructures::taxer_path(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("taxer_path()");
+
     std::vector<TownID> towns;
     if(!check_Id(id)){
         towns.push_back(NO_TOWNID);
@@ -293,9 +254,7 @@ std::vector<TownID> Datastructures::taxer_path(TownID id)
 
 bool Datastructures::remove_town(TownID id)
 {
-    // Replace the line below with your implementation
-    // Also uncomment parameters ( /* param */ -> param )
-    //throw NotImplemented("remove_town()");
+
     if(!check_Id(id)){
         return false;
     }
@@ -472,7 +431,7 @@ std::vector<TownID> Datastructures::get_distance_vector(Coord coord1)
     Coord location;
     int dist;
 
-    // Get distance from coord and id pair and insert it to a multimap
+    // Get distance and id pairs and insert them to a multimap
     for(auto const& pair : TownContainer_){
         location = pair.second.coord;
         dist = get_distance(location, coord1);
