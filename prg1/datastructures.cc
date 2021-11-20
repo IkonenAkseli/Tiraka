@@ -280,7 +280,8 @@ std::vector<TownID> Datastructures::taxer_path(TownID id)
         towns.push_back(NO_TOWNID);
         return towns;
     }
-    add_masters(towns, id);
+    TownData* town = &TownContainer_.at(id);
+    add_masters(towns, town);
 
 
     return towns;
@@ -404,12 +405,12 @@ int Datastructures::get_distance(Coord coord1, Coord coord2)
     return dist;
 }
 
-void Datastructures::add_masters(std::vector<TownID> &masters, TownID id)
+void Datastructures::add_masters(std::vector<TownID> &masters, TownData* town)
 {
-    masters.push_back(id);
-    if(TownContainer_.at(id).master != nullptr){
+    masters.push_back(town->id);
+    if(town->master != nullptr){
         //masters.push_back(TownContainer_.at(id).master->id);
-        add_masters(masters, TownContainer_.at(id).master->id);
+        add_masters(masters, town->master);
     }
 }
 

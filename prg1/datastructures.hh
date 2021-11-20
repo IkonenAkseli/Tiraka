@@ -207,7 +207,7 @@ private:
     // Returns: Distance between the 2 coordinates rounded down
     int get_distance(Coord coord1, Coord coord2);
 
-    void add_masters(std::vector<TownID> &masters, TownID id);
+    void add_masters(std::vector<TownID> &masters, TownData* town);
 
     std::vector<TownID> get_path_ids(TownData* child);
     int get_tax(TownData* town);
