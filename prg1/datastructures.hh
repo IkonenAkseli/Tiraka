@@ -122,8 +122,9 @@ public:
     // constant on average
     bool add_town(TownID id, Name const& name, Coord coord, int tax);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: O(N) Theta 1
+    // Short rationale for estimate: Operations are linear in worst case but
+    // constant on average
     Name get_town_name(TownID id);
 
     // Estimate of performance: O(N) Theta 1
