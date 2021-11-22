@@ -6,7 +6,11 @@ vasallit ovat structin sisällä unordered_setissä, usettiä käytetään, sill
 sieltä poistaminen ja sieltä hakeminen ovat kaikki keskimääräisesti vakioiaikaisia.
 Struct sisältää osoittimet vasalleihin ja isäntään. tämä on sitä varten, että näin muodostuu
 puu, joka mahdollistaa nopeamman selvityksen isännistä ja vasalleista. Tällä tavalla pääsee
-myös vakioaikaisesti isännän ja tietyn vasallin structiin käsiksi.
+myös vakioaikaisesti isännän ja tietyn vasallin structiin käsiksi. Viikolla 7 annettu artikkeli
+osoittimien säilymisestä kertoo, että umap rehash ei riko viitteitä ja osoittimia.
+
+En ole tehnyt muita tietorakenteita, sillä käytetyt tietorakenteet toimivat tehokkaasti tiedon hakemiseen
+ja uusien rakenteiden luominen ja ylläpitäminen spesifejä tarkoituksia varten vie resursseja.
 
 Kaupungit ja niiden data (id,nimi,vero,koordinaatit,isäntä,vasallit)
 talletetaan unordered_map tietorakenteeseen, jossa avaimena toimii id ja
