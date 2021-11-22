@@ -205,6 +205,8 @@ bool Datastructures::add_vassalship(TownID vassalid, TownID masterid)
     if(!check_Id(vassalid) or !check_Id(masterid)){
         return false;
     }
+
+    // Check for vassal already having a master
     if(TownContainer_.at(vassalid).master != nullptr){
         return false;
     }
