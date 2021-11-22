@@ -246,6 +246,8 @@ std::vector<TownID> Datastructures::taxer_path(TownID id)
         return towns;
     }
     TownData* town = &TownContainer_.at(id);
+
+    // Call for getting the correct path in towns
     add_masters(towns, town);
 
 
@@ -312,7 +314,9 @@ std::vector<TownID> Datastructures::longest_vassal_path(TownID id)
     }
     // Get the vassal that has most steps to it and store it in furthest_town_
     set_furthest_vassal(town);
-    // Get masters from the furthest town to the town at which to stop
+    // Get masters of the furthest town to the town given
+    // I.E fetches a vector containing all of the vassals from the longest
+    // path in reverse order.
     add_masters(towns, furthest_town_, town);
 
 
@@ -366,6 +370,8 @@ bool Datastructures::check_Id(TownID id)
 int Datastructures::get_distance(Coord coord1, Coord coord2)
 {
 
+    // Calculation for eucledic distance between coord1 and coord2
+    // cast to int for rounding down
     float temp = sqrt(pow(coord1.x-coord2.x,2)+pow(coord1.y-coord2.y,2)*1.0);
     int dist = temp;
 
@@ -384,6 +390,7 @@ void Datastructures::add_masters(std::vector<TownID> &masters, TownData* town,
 }
 
 // This method isn't used, but is preserved in case it ends up being needed
+/*
 std::vector<TownID> Datastructures::get_path_ids(TownData *child)
 {
     std::vector<TownID> towns;
@@ -409,7 +416,7 @@ std::vector<TownID> Datastructures::get_path_ids(TownData *child)
     }
 
     return towns;
-}
+}*/
 
 int Datastructures::get_tax(TownData *town)
 {
@@ -434,7 +441,11 @@ std::vector<TownID> Datastructures::get_distance_vector(Coord coord1)
     // Get distance and id pairs and insert them to a multimap
     for(auto const& pair : TownContainer_){
         location = pair.second.coord;
+
+        // Call get_distance for calculating the distance between
+        // Town location and the given point
         dist = get_distance(location, coord1);
+
         temp.insert({dist, pair.first});
     }
     // Get ID:s from multimap and add them to a vector
@@ -459,7 +470,7 @@ void Datastructures::set_furthest_vassal(TownData *town)
         return;
     }
 
-
+    // Go through all vassals down the tree
     for(auto vassal : town->vassals){
         set_furthest_vassal(vassal);
     }

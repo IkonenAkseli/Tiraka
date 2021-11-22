@@ -240,7 +240,7 @@ private:
                      TownData* stop = nullptr);
 
     // This method is not used. Preserved only in case needed at some point.
-    std::vector<TownID> get_path_ids(TownData* child);
+    //std::vector<TownID> get_path_ids(TownData* child);
 
     // Gets tax for the given town, recursively calls itself to get tax from
     // every vassal.
