@@ -1,4 +1,4 @@
-# Readme.txt löytyy kansiosta prg1
+# README.txt löytyy kansiosta prg1 ja hakemiston pohjalta
 
 # Olet onnistuneesti hakenut päivitykset upstream repositorysta
 
