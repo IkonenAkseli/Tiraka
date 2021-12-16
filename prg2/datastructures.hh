@@ -267,11 +267,18 @@ private:
 
        bool dest_found_;
 
+       Node* last_from_cycle_;
+       Node* cycle_node_;
+
+
+
        bool check_Road(TownID id);
 
        void reset_nodes();
 
        void find_route(Node* node, TownID id);
+
+       void find_cycle(Node* node, TownID id);
 
        // Helper for checking if a town with a certain id exists
        // Takes town id as a parameter
