@@ -1,8 +1,8 @@
 // Datastructures.hh
 //
-// Student name:
-// Student email:
-// Student number:
+// Student name:Akseli Ikonen
+// Student email: akseli.ikonen@tuni.fi
+// Student number: K434701
 
 #ifndef DATASTRUCTURES_HH
 #define DATASTRUCTURES_HH
@@ -14,6 +14,12 @@
 #include <limits>
 #include <functional>
 #include <exception>
+#include <map>
+#include <unordered_map>
+#include <algorithm>
+#include <set>
+
+#include <unordered_set>
 
 // Types for IDs
 using TownID = std::string;
@@ -84,6 +90,27 @@ public:
     }
 private:
     std::string msg_;
+};
+
+struct TownData
+{
+    TownID id;
+    Name name;
+    Coord coord;
+    int tax;
+    std::unordered_set<TownData*> vassals;
+    TownData* master;
+
+};
+
+
+
+struct Node
+{
+    TownID id;
+
+    std::unordered_map<Node*, int> neighbours;
+
 };
 
 
@@ -224,6 +251,73 @@ public:
 
 private:
     // Add stuff needed for your class implementation here
+
+    //Container for all towns
+       std::unordered_map<TownID, TownData> TownContainer_;
+
+       TownData* furthest_town_;
+
+       int depth_;
+       int running_depth_;
+
+       std::unordered_map<TownID, Node> RoadContainer_;
+
+       bool check_Road(TownID id);
+
+       // Helper for checking if a town with a certain id exists
+       // Takes town id as a parameter
+       // Returns true if a town with the given id exists, false if not
+       // Estimate for performance: O(N) Theta 1
+       // Rationale: Umap.find is linear in worst case but constant in average
+       bool check_Id(TownID id);
+
+       // Calculates the eucledian distance between 2 coordinates
+       // Parameters: Coordinates 1 and 2
+       // Returns: Distance between the 2 coordinates rounded down
+       // Estimate of performance: O(1)
+       // Rationale: Does a constant calculation and returns the result.
+       int get_distance(Coord coord1, Coord coord2);
+
+       // Takes a vector of town ID:s as a parameter, adds every master and masters
+       // master in to the given vector. Takes a pointer to a town from which to
+       // start as a parameter and a pointer at which to stop. By default stops
+       // when no masters remain.
+       // This method does no checks for parameters.
+       // Estimate for performance: O(N)
+       // Rationale: Does push_back for each master above the node in it's branch
+       // O(N) where N = Master count
+       void add_masters(std::vector<TownID> &masters, TownData* town,
+                        TownData* stop = nullptr);
+
+       // This method is not used. Preserved only in case needed at some point.
+       //std::vector<TownID> get_path_ids(TownData* child);
+
+       // Gets tax for the given town, recursively calls itself to get tax from
+       // every vassal.
+       // Does no checks for the given parameter, returns int.
+       // Estimate for permormance: O(N)
+       // Rationale: Does O(1) operation for each vassal node, O(N) where
+       // N = vassals
+       int get_tax(TownData* town);
+
+       // Returns a vector of TownID:s in an ascending order from a given Coord
+       // Takes a Coord as a parameter, does no checks for parameter validity
+       // Parameter must be valid.
+       // Estimate for performance: NlogN
+       // Rationale for estimate: Does nlogN operation for each town (N)
+       // No loops inside loops, most complex operation done for each town
+       // is logN
+       std::vector<TownID> get_distance_vector(Coord coord1);
+
+       // Finds the vassal furthest from a given town and sets it as
+       // furthest_town_
+       // Takes given town as a parameter, does no checks for validity of parameter
+       // Estimate for performance: O(N) where N = amount of vassals
+       // vassals vassals etc
+       // Rationale: Every vassal is visited and linear operations are done for
+       // each
+       void set_furthest_vassal(TownData* town);
+
 
 };
 
