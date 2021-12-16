@@ -530,11 +530,42 @@ std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
     return towns;
 }
 
-bool Datastructures::remove_road(TownID /*town1*/, TownID /*town2*/)
+bool Datastructures::remove_road(TownID town1, TownID town2)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("remove_road()");
+    //throw NotImplemented("remove_road()");
+    if(!check_Road(town1) or !check_Road(town2)){
+        return false;
+    }
+    bool road_found = false;
+
+    for(auto &neighbour : RoadContainer_.at(town1).neighbours){
+        if(neighbour.first->id == town2){
+            road_found = true;
+        }
+    }
+    if(!road_found){
+        return false;
+    }
+
+    auto ptr_1 = &RoadContainer_.at(town1);
+    auto ptr_2 = &RoadContainer_.at(town2);
+
+    if(RoadContainer_.at(town1).neighbours.size() == 1){
+        RoadContainer_.erase(town1);
+    }
+    else {
+        RoadContainer_.at(town1).neighbours.erase(ptr_2);
+    }
+    if(RoadContainer_.at(town2).neighbours.size() == 1){
+        RoadContainer_.erase(town2);
+    }
+    else {
+        RoadContainer_.at(town2).neighbours.erase(ptr_1);
+    }
+
+    return true;
 }
 
 std::vector<TownID> Datastructures::least_towns_route(TownID /*fromid*/, TownID /*toid*/)
