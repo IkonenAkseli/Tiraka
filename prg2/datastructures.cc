@@ -493,13 +493,39 @@ std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("any_route()");
+    //throw NotImplemented("any_route()");
     std::vector<TownID> towns;
+    std::vector<TownID> towns_reverse;
     if(!check_Id(fromid) or !check_Id(toid)){
         towns.push_back(NO_TOWNID);
         return towns;
     }
+    if(!check_Road(fromid) or !check_Road(toid)){
+        towns.push_back(NO_TOWNID);
+        return towns;
+    }
 
+    reset_nodes();
+    dest_found_ = false;
+    RoadContainer_.at(fromid).status = 1;
+
+    for(auto& neighbour : RoadContainer_.at(fromid).neighbours){
+        find_route(neighbour.first, toid);
+    }
+    auto ptr = RoadContainer_.at(toid).from;
+
+    towns_reverse.push_back(toid);
+
+    while (ptr != nullptr){
+        towns_reverse.push_back(ptr->id);
+        ptr = ptr->from;
+    }
+
+    towns_reverse.push_back(fromid);
+
+    for(auto i = towns_reverse.rbegin(); i != towns_reverse.rend(); i++){
+        towns.push_back(*i);
+    }
 
     return towns;
 }
@@ -544,6 +570,42 @@ bool Datastructures::check_Road(TownID id)
         return false;
     }
     return true;
+}
+
+void Datastructures::reset_nodes()
+{
+    for(auto &node : RoadContainer_){
+        node.second.from = nullptr;
+        node.second.status = 0;
+    }
+}
+
+void Datastructures::find_route(Node *node, TownID id)
+{
+    if (dest_found_){
+        return;
+    }
+    if(node->id == id){
+        dest_found_ = true;
+        return;
+    }
+    node->status = 1;
+
+    for(auto neighbour : node->neighbours){
+        if(dest_found_){
+            break;
+        }
+        if(!dest_found_ and neighbour.first->status == 0){
+            neighbour.first->from = node;
+
+            find_route(neighbour.first, id);
+        }
+
+
+        if(dest_found_){
+            break;
+        }
+    }
 }
 
 // Start of phase one helper methods

@@ -109,6 +109,9 @@ struct Node
 {
     TownID id;
 
+    int status = 0;
+    Node* from = nullptr;
+
     std::unordered_map<Node*, int> neighbours;
 
 };
@@ -262,7 +265,13 @@ private:
 
        std::unordered_map<TownID, Node> RoadContainer_;
 
+       bool dest_found_;
+
        bool check_Road(TownID id);
+
+       void reset_nodes();
+
+       void find_route(Node* node, TownID id);
 
        // Helper for checking if a town with a certain id exists
        // Takes town id as a parameter
