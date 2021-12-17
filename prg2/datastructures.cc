@@ -389,10 +389,15 @@ std::vector<std::pair<TownID, TownID>> Datastructures::all_roads()
 
         for(auto &neighbour : node.second.neighbours){
 
+            // Combine town Id's in such a way that any two towns should
+            // create a unique string to act as a key for the unordered map
+            // this allows for easy duplicate detection
             str_to_hash = "";
+
             if (node.first < neighbour.first->id){
                 id_pair.first = node.first;
                 id_pair.second = neighbour.first->id;
+
                 str_to_hash = id_pair.first + "abcdkopl" + id_pair.first +
                         id_pair.second;
 
@@ -401,6 +406,7 @@ std::vector<std::pair<TownID, TownID>> Datastructures::all_roads()
             else{
                 id_pair.first = neighbour.first->id;
                 id_pair.second = node.first;
+
                 str_to_hash = id_pair.first + "abcdkopl" + id_pair.first
                         + id_pair.second;
 
@@ -500,27 +506,32 @@ std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
     //throw NotImplemented("any_route()");
     std::vector<TownID> towns;
     std::vector<TownID> towns_reverse;
-    if(!check_Id(fromid) or !check_Id(toid)){
-        towns.push_back(NO_TOWNID);
-        return towns;
-    }
+
+//    if(!check_Id(fromid) or !check_Id(toid)){
+//        towns.push_back(NO_TOWNID);
+//        return towns;
+//    }
+
     if(!check_Road(fromid) or !check_Road(toid)){
         towns.push_back(NO_TOWNID);
         return towns;
     }
 
-    reset_nodes();
-    dest_found_ = false;
-    RoadContainer_.at(fromid).status = 1;
+
 
 //    for(auto& neighbour : RoadContainer_.at(fromid).neighbours){
 //        find_route(neighbour.first, toid);
 //    }
-    find_route(&RoadContainer_.at(fromid), toid);
 
-    auto ptr = RoadContainer_.at(toid).from;
+    reset_nodes();
+    dest_found_ = false;
+    RoadContainer_.at(toid).status = 1;
 
-    towns_reverse.push_back(toid);
+    find_route(&RoadContainer_.at(toid), fromid);
+
+    auto ptr = RoadContainer_.at(fromid).from;
+
+    towns_reverse.push_back(fromid);
 
     while (ptr != nullptr){
         towns_reverse.push_back(ptr->id);
@@ -533,7 +544,7 @@ std::vector<TownID> Datastructures::any_route(TownID fromid, TownID toid)
         towns.push_back(*i);
     }
 
-    return towns;
+    return towns_reverse;
 }
 
 bool Datastructures::remove_road(TownID town1, TownID town2)
@@ -630,7 +641,7 @@ std::vector<TownID> Datastructures::road_cycle_route(TownID startid)
     }
 
     reset_nodes();
-    dest_found_ = false;
+
     //RoadContainer_.at(startid).status = 1;
 
 
@@ -640,8 +651,11 @@ std::vector<TownID> Datastructures::road_cycle_route(TownID startid)
 //        find_cycle(neighbour.first);
 //    }
 
+    dest_found_ = false;
     last_from_cycle_ = nullptr;
+
     find_cycle(&RoadContainer_.at(startid));
+
     if(!dest_found_){
         return towns;
     }

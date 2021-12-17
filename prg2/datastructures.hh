@@ -212,42 +212,60 @@ public:
 
     // Phase 2 operations
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Each operation that does a check for valid parameters can be constant
+    // if parameters are invalid. unordered_map search by key, insertion
+    // and deletion are treated as constant.
+
+    // Estimate of performance: Linear
+    // Short rationale for estimate: Cppreference claims umap.clear() is linear
     void clear_roads();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N*V where N is the amount of towns in road
+    // network and V is the amount of roads between towns.
+    // Short rationale for estimate: There are N*V constant operations
+    // in the dual loop. Operations outside that are either linear or constant
     std::vector<std::pair<TownID, TownID>> all_roads();
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N where N is the amount of roads town1 aklready
+    // has.
+    // Short rationale for estimate:There is a constant operation for each road
+    // town1 has.
     bool add_road(TownID town1, TownID town2);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N where N is the amount of roads the given town
+    // has.
+    // Short rationale for estimate: Constant operation for each road the given
+    // town has.
     std::vector<TownID> get_roads_from(TownID id);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N + V where N is the amount of towns in the
+    // graph and V is the amount of roads.
+    // Short rationale for estimate: Calls a function that has N + V complexity
+    // There is of course a chance for a constant operation if start and end
+    // are the same.
     std::vector<TownID> any_route(TownID fromid, TownID toid);
 
     // Non-compulsory phase 2 operations
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N where N is the amount of roads town1 has
+    // Short rationale for estimate: Checks every road that town one has.
+    // Can be constant if there is only one road.
     bool remove_road(TownID town1, TownID town2);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N + V where N is the amount of towns with roads
+    // and V is the amount of roads.
+    // Short rationale for estimate: Calls a BFS algorithm.
     std::vector<TownID> least_towns_route(TownID fromid, TownID toid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N + V where N is the amount of towns with roads
+    // and V is the amount of roads.
+    // Short rationale for estimate: Calls a dfs algorithm
     std::vector<TownID> road_cycle_route(TownID startid);
 
-    // Estimate of performance:
-    // Short rationale for estimate:
+    // Estimate of performance: N log V where N is the amount of towns with
+    // roads and V is the amount of roads.
+    // Short rationale for estimate: Calls a function using dijkstras
+    // algorithm.
     std::vector<TownID> shortest_route(TownID fromid, TownID toid);
 
     // Estimate of performance:
@@ -281,12 +299,25 @@ private:
        // complexity: worst case N^2, average linear
        void reset_nodes();
 
+       // Estimate: N + V where N is the amount of towns in the graph and
+       // V is the amount of roads.
+       // Rationale: Works like DFS and DFS has a complexity of N + V
        void find_route(Node* node, TownID id);
 
+       // Estimate: N + V where N is the amount of towns with roads and V
+       // is the amount of roads.
+       // Rationale: it's a DFS algorithm which has N + V complexity
        void find_cycle(Node* node);
 
+       // Estimate: N + V where N is the amount of towns with roads and V
+       // is the amount of roads.
+       // Rationale: it's a BFS algorithm which has N + V complexity
        bool find_least_towns(Node* node, TownID id);
 
+       // Estimate: N log V where N is the amount of towns with roads and V
+       // is the amount of roads.
+       // Rationale: Inner loop is operated N + V times and performs a log V
+       // operation.
        bool find_shortest(Node* node, TownID id);
 
        // Helper for checking if a town with a certain id exists
