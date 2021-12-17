@@ -287,6 +287,8 @@ private:
 
        bool find_least_towns(Node* node, TownID id);
 
+       bool find_shortest(Node* node, TownID id);
+
        // Helper for checking if a town with a certain id exists
        // Takes town id as a parameter
        // Returns true if a town with the given id exists, false if not

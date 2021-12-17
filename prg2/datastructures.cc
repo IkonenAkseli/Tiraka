@@ -393,14 +393,16 @@ std::vector<std::pair<TownID, TownID>> Datastructures::all_roads()
             if (node.first < neighbour.first->id){
                 id_pair.first = node.first;
                 id_pair.second = neighbour.first->id;
-                str_to_hash = id_pair.first + "abcdkopl" + id_pair.second;
+                str_to_hash = id_pair.first + "abcdkopl" + id_pair.first +
+                        id_pair.second;
 
 
             }
             else{
                 id_pair.first = neighbour.first->id;
                 id_pair.second = node.first;
-                str_to_hash = id_pair.first + "abcdkopl" + id_pair.second;
+                str_to_hash = id_pair.first + "abcdkopl" + id_pair.first
+                        + id_pair.second;
 
             }
             if(roads.find(str_to_hash) == roads.end()){
@@ -585,8 +587,8 @@ std::vector<TownID> Datastructures::least_towns_route(TownID fromid, TownID toid
     }
 
     reset_nodes();
-    dest_found_ = false;
-    RoadContainer_.at(fromid).cost = 0;
+//    dest_found_ = false;
+//    RoadContainer_.at(fromid).cost = 0;
     if(!find_least_towns(&RoadContainer_.at(fromid), toid)){
         return towns;
     }
@@ -658,11 +660,37 @@ std::vector<TownID> Datastructures::road_cycle_route(TownID startid)
     return towns;
 }
 
-std::vector<TownID> Datastructures::shortest_route(TownID /*fromid*/, TownID /*toid*/)
+std::vector<TownID> Datastructures::shortest_route(TownID fromid, TownID toid)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("shortest_route()");
+    //throw NotImplemented("shortest_route()");
+    std::vector<TownID> towns;
+
+    if(!check_Road(fromid) or !check_Road(toid)){
+        towns.push_back(NO_TOWNID);
+        return towns;
+    }
+
+    reset_nodes();
+//    dest_found_ = false;
+//    RoadContainer_.at(fromid).cost = 0;
+    if(!find_shortest(&RoadContainer_.at(fromid), toid)){
+        return towns;
+    }
+    std::vector<TownID> towns_reverse;
+    auto ptr = &RoadContainer_.at(toid);
+
+    while (ptr != nullptr){
+        towns_reverse.push_back(ptr->id);
+        ptr = ptr->from;
+    }
+
+    for(auto i = towns_reverse.rbegin(); i != towns_reverse.rend(); i++){
+        towns.push_back(*i);
+    }
+
+    return towns;
 
 
 }
@@ -780,6 +808,52 @@ bool Datastructures::find_least_towns(Node *node, TownID id)
     return false;
 
 
+}
+
+bool Datastructures::find_shortest(Node *node, TownID id)
+{
+    std::set<std::pair<int, Node*>> Q;
+    node->cost = 0;
+    node->status = 1;
+    Q.insert({0,node});
+    bool cost_changed = false;
+    int temp_cost = 0;
+
+    while(!Q.empty()){
+        auto u = *Q.begin();
+        Q.erase(Q.begin());
+        if(u.second->id == id){
+            return true;
+        }
+
+        for (auto &neighbour : u.second->neighbours){
+
+            cost_changed = false;
+            if(neighbour.first->cost > u.second->cost + neighbour.second){
+                temp_cost = neighbour.first->cost;
+                neighbour.first->cost = u.second->cost + neighbour.second;
+                neighbour.first->from = u.second;
+                cost_changed = true;
+            }
+
+
+            if (neighbour.first->status == 0){
+
+
+                neighbour.first->status = 1;
+
+
+
+                Q.insert({neighbour.first->cost,neighbour.first});
+            }
+            else if (cost_changed){
+                Q.erase({temp_cost,neighbour.first});
+                Q.insert({neighbour.first->cost,neighbour.first});
+            }
+        }
+        u.second->status = 3;
+    }
+    return false;
 }
 
 // Start of phase one helper methods
