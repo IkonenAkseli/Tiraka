@@ -545,8 +545,9 @@ bool Datastructures::remove_road(TownID town1, TownID town2)
         return false;
     }
     bool road_found = false;
+    auto ptr_1 = &RoadContainer_.at(town1);
 
-    for(auto &neighbour : RoadContainer_.at(town1).neighbours){
+    for(auto &neighbour : ptr_1->neighbours){
         if(neighbour.first->id == town2){
             road_found = true;
         }
@@ -555,20 +556,23 @@ bool Datastructures::remove_road(TownID town1, TownID town2)
         return false;
     }
 
-    auto ptr_1 = &RoadContainer_.at(town1);
+
     auto ptr_2 = &RoadContainer_.at(town2);
 
-    if(RoadContainer_.at(town1).neighbours.size() == 1){
+
+    // Remove towns from graph if they're left with no roads after removal
+    // if not then remove roads from neighbours.
+    if( ptr_1->neighbours.size() == 1){
         RoadContainer_.erase(town1);
     }
     else {
-        RoadContainer_.at(town1).neighbours.erase(ptr_2);
+         ptr_1->neighbours.erase(ptr_2);
     }
-    if(RoadContainer_.at(town2).neighbours.size() == 1){
+    if( ptr_2->neighbours.size() == 1){
         RoadContainer_.erase(town2);
     }
     else {
-        RoadContainer_.at(town2).neighbours.erase(ptr_1);
+         ptr_2->neighbours.erase(ptr_1);
     }
 
     return true;
@@ -720,19 +724,21 @@ void Datastructures::reset_nodes()
 
 void Datastructures::find_route(Node *node, TownID id)
 {
+
     if (dest_found_){
         return;
     }
+    // Flagging that the destination is found
     if(node->id == id){
         dest_found_ = true;
         return;
     }
     node->status = 1;
 
+    // Keeps going depth first and setting previous nodes until destination
+    // is found or there are no more nodes left.
     for(auto neighbour : node->neighbours){
-        if(dest_found_){
-            break;
-        }
+
         if(!dest_found_ and neighbour.first->status == 0){
             neighbour.first->from = node;
 
@@ -748,23 +754,32 @@ void Datastructures::find_route(Node *node, TownID id)
 
 void Datastructures::find_cycle(Node *node)
 {
-    if (node->status == 1){
-        dest_found_ = true;
-    }
+    // This code is not needed but is preserved just in case.
+    // Upon arrival to a node for the second time destination is set as found
+//    if (node->status == 1){
+//        dest_found_ = true;
+//    }
 
     node->status = 1;
 
     for(auto neighbour : node->neighbours){
+
+        // Keeping track of which node is the last before one is entered again
+        // and which node was entered twice.
         last_from_cycle_ = node;
         cycle_node_ = neighbour.first;
+
         if(dest_found_){
             break;
         }
 
+        // A cycle is found when the next node to be accesed has been accessed
+        // before but isn't the previous node.
         if(neighbour.first->status != 0 and neighbour.first
                 != node->from){
             dest_found_ = true;
         }
+
         if(!dest_found_ and neighbour.first->status == 0){
             neighbour.first->from = node;
 
@@ -789,14 +804,18 @@ bool Datastructures::find_least_towns(Node *node, TownID id)
     Q.push(node);
 
     while(!Q.empty()){
+
         auto u = Q.front();
         Q.pop();
 
         for (auto &neighbour : u->neighbours){
             if (neighbour.first->status == 0){
+
                 neighbour.first->status = 1;
                 neighbour.first->cost = u->cost + 1;
+                // Keep track of the route traversed
                 neighbour.first->from = u;
+
                 if (neighbour.first->id == id){
                     return true;
                 }
@@ -822,16 +841,23 @@ bool Datastructures::find_shortest(Node *node, TownID id)
     while(!Q.empty()){
         auto u = *Q.begin();
         Q.erase(Q.begin());
+
         if(u.second->id == id){
             return true;
         }
 
         for (auto &neighbour : u.second->neighbours){
 
+            auto cost1 = neighbour.first->cost;
+            auto cost2 = u.second->cost;
+
             cost_changed = false;
-            if(neighbour.first->cost > u.second->cost + neighbour.second){
+
+            // Change adjacent node cost if a cheaper route is found
+            if(cost1 > cost2 + neighbour.second){
+
                 temp_cost = neighbour.first->cost;
-                neighbour.first->cost = u.second->cost + neighbour.second;
+                neighbour.first->cost = cost2 + neighbour.second;
                 neighbour.first->from = u.second;
                 cost_changed = true;
             }
@@ -846,6 +872,7 @@ bool Datastructures::find_shortest(Node *node, TownID id)
 
                 Q.insert({neighbour.first->cost,neighbour.first});
             }
+            // Update the changed cost
             else if (cost_changed){
                 Q.erase({temp_cost,neighbour.first});
                 Q.insert({neighbour.first->cost,neighbour.first});
