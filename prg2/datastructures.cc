@@ -435,6 +435,7 @@ bool Datastructures::add_road(TownID town1, TownID town2)
     Node node;
     node.neighbours = {};
 
+    // Adding towns to data structure if no road leads to them yet
     if(!check_Road(town1)){
         node.id = town1;
         RoadContainer_.insert({town1,node});
@@ -446,6 +447,7 @@ bool Datastructures::add_road(TownID town1, TownID town2)
 
 
 
+    // Checking if the towns already have a road between them
     for(auto &neighbour : RoadContainer_.at(town1).neighbours){
         if(neighbour.first->id == town2){
             return false;
@@ -570,11 +572,38 @@ bool Datastructures::remove_road(TownID town1, TownID town2)
     return true;
 }
 
-std::vector<TownID> Datastructures::least_towns_route(TownID /*fromid*/, TownID /*toid*/)
+std::vector<TownID> Datastructures::least_towns_route(TownID fromid, TownID toid)
 {
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
-    throw NotImplemented("least_towns_route()");
+    //throw NotImplemented("least_towns_route()");
+    std::vector<TownID> towns;
+
+    if(!check_Road(fromid) or !check_Road(toid)){
+        towns.push_back(NO_TOWNID);
+        return towns;
+    }
+
+    reset_nodes();
+    dest_found_ = false;
+    RoadContainer_.at(fromid).cost = 0;
+    if(!find_least_towns(&RoadContainer_.at(fromid), toid)){
+        return towns;
+    }
+    std::vector<TownID> towns_reverse;
+    auto ptr = &RoadContainer_.at(toid);
+
+    while (ptr != nullptr){
+        towns_reverse.push_back(ptr->id);
+        ptr = ptr->from;
+    }
+
+    for(auto i = towns_reverse.rbegin(); i != towns_reverse.rend(); i++){
+        towns.push_back(*i);
+    }
+
+    return towns;
+
 }
 
 std::vector<TownID> Datastructures::road_cycle_route(TownID startid)
@@ -605,7 +634,7 @@ std::vector<TownID> Datastructures::road_cycle_route(TownID startid)
 //    }
 
     last_from_cycle_ = nullptr;
-    find_cycle(&RoadContainer_.at(startid), startid);
+    find_cycle(&RoadContainer_.at(startid));
     if(!dest_found_){
         return towns;
     }
@@ -624,7 +653,7 @@ std::vector<TownID> Datastructures::road_cycle_route(TownID startid)
     for(auto i = towns_reverse.rbegin(); i != towns_reverse.rend(); i++){
         towns.push_back(*i);
     }
-    towns.push_back(cycle_node_->id);
+    //towns.push_back(cycle_node_->id);
 
     return towns;
 }
@@ -634,6 +663,8 @@ std::vector<TownID> Datastructures::shortest_route(TownID /*fromid*/, TownID /*t
     // Replace the line below with your implementation
     // Also uncomment parameters ( /* param */ -> param )
     throw NotImplemented("shortest_route()");
+
+
 }
 
 Distance Datastructures::trim_road_network()
@@ -655,6 +686,7 @@ void Datastructures::reset_nodes()
     for(auto &node : RoadContainer_){
         node.second.from = nullptr;
         node.second.status = 0;
+        node.second.cost = 999999;
     }
 }
 
@@ -686,7 +718,7 @@ void Datastructures::find_route(Node *node, TownID id)
     }
 }
 
-void Datastructures::find_cycle(Node *node, TownID id)
+void Datastructures::find_cycle(Node *node)
 {
     if (node->status == 1){
         dest_found_ = true;
@@ -695,24 +727,22 @@ void Datastructures::find_cycle(Node *node, TownID id)
     node->status = 1;
 
     for(auto neighbour : node->neighbours){
+        last_from_cycle_ = node;
+        cycle_node_ = neighbour.first;
         if(dest_found_){
             break;
         }
-//        if(neighbour.first->status != 0 and node->from != neighbour.first
-//                and neighbour.first != node and !first_call){
-//            dest_found_ = true;
-//        }
-        if(neighbour.first->status != 0 and neighbour.first->id
-                != id){
+
+        if(neighbour.first->status != 0 and neighbour.first
+                != node->from){
             dest_found_ = true;
         }
         if(!dest_found_ and neighbour.first->status == 0){
             neighbour.first->from = node;
 
 
-            last_from_cycle_ = node;
-            cycle_node_ = neighbour.first;
-            find_cycle(neighbour.first, node->id);
+
+            find_cycle(neighbour.first);
         }
 
 
@@ -720,6 +750,35 @@ void Datastructures::find_cycle(Node *node, TownID id)
             break;
         }
     }
+
+}
+
+bool Datastructures::find_least_towns(Node *node, TownID id)
+{
+
+
+    std::queue<Node*> Q;
+    Q.push(node);
+
+    while(!Q.empty()){
+        auto u = Q.front();
+        Q.pop();
+
+        for (auto &neighbour : u->neighbours){
+            if (neighbour.first->status == 0){
+                neighbour.first->status = 1;
+                neighbour.first->cost = u->cost + 1;
+                neighbour.first->from = u;
+                if (neighbour.first->id == id){
+                    return true;
+                }
+                Q.push(neighbour.first);
+            }
+        }
+        u->status = 3;
+    }
+    return false;
+
 
 }
 

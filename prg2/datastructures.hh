@@ -18,6 +18,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <set>
+#include <queue>
 
 #include <unordered_set>
 
@@ -111,6 +112,7 @@ struct Node
 
     int status = 0;
     Node* from = nullptr;
+    int cost = 999999;
 
     std::unordered_map<Node*, int> neighbours;
 
@@ -274,11 +276,16 @@ private:
 
        bool check_Road(TownID id);
 
+       // Resets every node state and previus node, to be used before graph
+       // algorithms.
+       // complexity: worst case N^2, average linear
        void reset_nodes();
 
        void find_route(Node* node, TownID id);
 
-       void find_cycle(Node* node, TownID id);
+       void find_cycle(Node* node);
+
+       bool find_least_towns(Node* node, TownID id);
 
        // Helper for checking if a town with a certain id exists
        // Takes town id as a parameter
