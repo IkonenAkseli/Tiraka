@@ -593,20 +593,21 @@ std::vector<TownID> Datastructures::least_towns_route(TownID fromid, TownID toid
     reset_nodes();
 //    dest_found_ = false;
 //    RoadContainer_.at(fromid).cost = 0;
-    if(!find_least_towns(&RoadContainer_.at(fromid), toid)){
+    // Call from end to beginning since the result comes backwards
+    if(!find_least_towns(&RoadContainer_.at(toid), fromid)){
         return towns;
     }
-    std::vector<TownID> towns_reverse;
-    auto ptr = &RoadContainer_.at(toid);
+    //std::vector<TownID> towns_reverse;
+    auto ptr = &RoadContainer_.at(fromid);
 
     while (ptr != nullptr){
-        towns_reverse.push_back(ptr->id);
+        towns.push_back(ptr->id);
         ptr = ptr->from;
     }
 
-    for(auto i = towns_reverse.rbegin(); i != towns_reverse.rend(); i++){
-        towns.push_back(*i);
-    }
+//    for(auto i = towns_reverse.rbegin(); i != towns_reverse.rend(); i++){
+//        towns.push_back(*i);
+//    }
 
     return towns;
 
@@ -679,20 +680,22 @@ std::vector<TownID> Datastructures::shortest_route(TownID fromid, TownID toid)
     reset_nodes();
 //    dest_found_ = false;
 //    RoadContainer_.at(fromid).cost = 0;
-    if(!find_shortest(&RoadContainer_.at(fromid), toid)){
+
+    // Calling backwards so so that the result comes in the right order
+    if(!find_shortest(&RoadContainer_.at(toid), fromid)){
         return towns;
     }
-    std::vector<TownID> towns_reverse;
-    auto ptr = &RoadContainer_.at(toid);
+    //std::vector<TownID> towns_reverse;
+    auto ptr = &RoadContainer_.at(fromid);
 
     while (ptr != nullptr){
-        towns_reverse.push_back(ptr->id);
+        towns.push_back(ptr->id);
         ptr = ptr->from;
     }
 
-    for(auto i = towns_reverse.rbegin(); i != towns_reverse.rend(); i++){
-        towns.push_back(*i);
-    }
+//    for(auto i = towns_reverse.rbegin(); i != towns_reverse.rend(); i++){
+//        towns.push_back(*i);
+//    }
 
     return towns;
 
